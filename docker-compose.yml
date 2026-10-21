@@ -1,0 +1,73 @@
+# Texas Parse Cloud — one-command self-host stack
+# Parse Server + MongoDB + Redis
+#
+# Usage:
+#   cp .env.example .env   # set your own MASTER_KEY (and APP_ID if you like)
+#   docker compose up -d
+#   API:        http://localhost:1337/parse
+#   Health:     http://localhost:1337/parse/health
+#   Dashboard:  docker compose --profile dashboard up -d  →  http://localhost:4040
+#
+# Base image/config: parse-server 9.10.6-alpha.5 (see README Disclosure).
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: texas-parse-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "127.0.0.1:27017:27017"
+
+  redis:
+    image: redis:7-alpine
+    container_name: texas-parse-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+
+  parse-server:
+    build: .
+    container_name: texas-parse-server
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      PORT: "1337"
+      PARSE_SERVER_APPLICATION_ID: "${APP_ID:-TEXAS}"
+      # NEVER ship the default — set MASTER_KEY in .env to a long random secret.
+      PARSE_SERVER_MASTER_KEY: "${MASTER_KEY:-change-me-set-MASTER_KEY-in-your-env-file}"
+      PARSE_SERVER_DATABASE_URI: "mongodb://mongo:27017/parse_texas"
+      PARSE_SERVER_MOUNT_PATH: "/parse"
+    ports:
+      - "1337:1337"
+
+  # Optional admin dashboard — LOCAL USE ONLY in this configuration
+  # (allowInsecureHTTP is on so it works over http://localhost; do not
+  # expose it publicly without HTTPS and strong dashboard credentials).
+  dashboard:
+    image: parseplatform/parse-dashboard:latest
+    container_name: texas-parse-dashboard
+    restart: unless-stopped
+    profiles:
+      - dashboard
+    depends_on:
+      - parse-server
+    environment:
+      PARSE_DASHBOARD_APP_ID: "${APP_ID:-TEXAS}"
+      PARSE_DASHBOARD_MASTER_KEY: "${MASTER_KEY:-change-me-set-MASTER_KEY-in-your-env-file}"
+      PARSE_DASHBOARD_SERVER_URL: "http://localhost:1337/parse"
+      PARSE_DASHBOARD_APP_NAME: "Texas Parse Cloud"
+      PARSE_DASHBOARD_USER_ID: "${DASHBOARD_USER:-texasadmin}"
+      PARSE_DASHBOARD_USER_PASSWORD: "${DASHBOARD_PASSWORD:-change-me-too}"
+      PARSE_DASHBOARD_ALLOW_INSECURE_HTTP: "true"
+    ports:
+      - "4040:4040"
+
+volumes:
+  mongo_data:
+  redis_data:
