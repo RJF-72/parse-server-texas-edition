@@ -17,7 +17,7 @@ Don't want to self-host? I host it for you — Texas support, from Abilene.
 👉 **Order by email today:** rjflanary1@gmail.com — onboarding is personal, I set you up myself.
 👉 **Payhip checkout:** https://payhip.com/b/Kila5 · Direct checkout: https://payhip.com/order?link=Kila5
 
-> **Checkout status (Oct 21, 2026):** the Payhip product link is being republished — if the checkout page doesn't load the product, email rjflanary1@gmail.com and I'll get you set up the same day. The $99/mo offer stands.
+> **Status (Oct 21, 2026):** LIVE and verified — product page and subscription checkout both load with the $99/mo price. Prefer email? rjflanary1@gmail.com works too.
 
 ✅ Unlimited apps, requests, users
 ✅ MongoDB + Redis + S3 included — no extra bills
@@ -114,7 +114,7 @@ docker compose --profile dashboard up -d
 ✅ `src/`, `spec/`, `public/`, `bin/`, `Dockerfile` all present
 ✅ `docker-compose.yml` + `.env.example` added in Texas Edition (compose not run on the build box — no Docker there; file is spec-valid YAML)
 ⚠️ Base is an **alpha** upstream release (9.10.6-alpha.5) — see Disclosure above
-⚠️ Payhip checkout link is being republished — order by email in the meantime (see Hosted section)
+✅ Payhip — FIXED Oct 21, 2026: the Kila5 product existed as an unpublished, invisible DRAFT membership (that is why the links redirected/404'd). It is now Published + Visible: product page and $99/mo subscription checkout verified live
 ⚠️ 5 upstream Dependabot PRs open (#1–#5): four are major-version bumps (release tooling / bcrypt / Babel) and are **not** blind-merged; reviewed individually
 
 Repo is OK — ready to sell, with the disclosures above on the label.
