@@ -24,7 +24,7 @@ Don't want to self-host? I host it for you — Texas support, from Abilene.
 ✅ Free migration from Heroku / Back4App / Firebase — I do it TODAY
 ✅ Email: rjflanary1@gmail.com — Abilene, TX
 
-Why $99? Back4App charges $500/mo for 1M requests. Firebase $300+ with lock-in. Texas Parse Cloud is $99 flat.
+Why $99? Back4App's unlimited-requests Dedicated plan is $400/mo. Firebase bills by usage, with lock-in and no self-host option. Texas Parse Cloud is $99 flat.
 
 ---
 
@@ -99,7 +99,7 @@ docker compose --profile dashboard up -d
 
 |  | Texas Parse Cloud | Back4App | Firebase |
 |---|---|---|---|
-| Price | **$99/mo unlimited** | $500/mo for 1M req | $300+ with lock-in |
+| Price | **$99/mo unlimited** | $80/mo for 5M req; $400/mo unlimited | usage-based, lock-in, no self-host |
 | Open source | ✅ Apache 2.0 | ❌ | ❌ |
 | Self-host free | ✅ | ❌ | ❌ |
 
@@ -127,4 +127,4 @@ Repo is OK — ready to sell, with the disclosures above on the label.
 - Checkout: https://payhip.com/order?link=Kila5
 - Support: rjflanary1@gmail.com
 
-*Parse is a trademark of its respective owner; this project is an independent Apache 2.0 fork of the open-source Parse Server and is not affiliated with Meta/Facebook.*
+*Parse is a trademark of its respective owner; this project is an independent hosted edition of the open-source Parse Server (Apache 2.0), imported from the upstream project; not affiliated with Meta/Facebook or the Parse Platform project.*
