@@ -30,7 +30,7 @@ Why $99? Back4App's unlimited-requests Dedicated plan is $400/mo. Firebase bills
 
 ## 🛢️ What Is This?
 
-This is [parse-community/parse-server](https://github.com/parse-community/parse-server) (40k+ stars, Apache 2.0, battle-tested) — imported as the **Texas Edition**:
+This is [parse-community/parse-server](https://github.com/parse-community/parse-server) (21k+ stars, Apache 2.0, battle-tested) — imported as the **Texas Edition**:
 
 - **Original upstream:** https://github.com/parse-community/parse-server
 - **This edition:** Texas branding + $99/mo hosted offer + one-click Docker deploy (this repo)
