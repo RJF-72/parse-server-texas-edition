@@ -9,6 +9,18 @@
 #   Dashboard:  docker compose --profile dashboard up -d  →  http://localhost:4040
 #
 # Base image/config: parse-server 9.10.6-alpha.5 (see README Disclosure).
+#
+# Hardening applied Oct 26, 2026 (see ~/workspace/texas-parse-cloud-deploy):
+#   - MASTER_KEY / DASHBOARD_PASSWORD are REQUIRED — no known-default
+#     fallback. Compose refuses to start until .env sets real secrets.
+#   - Every port binds 127.0.0.1 only (Parse + dashboard included). For a
+#     public/hosted deploy use docker-compose.prod.yml in the deployment
+#     package (Caddy + HTTPS in front) — do not just widen these binds.
+#   - Redis is wired into Parse Server as its cache adapter (previously
+#     Redis ran but nothing connected to it).
+#   - Uploaded files persist in the parse_files volume (previously they
+#     lived in the container layer and were lost on recreate).
+#   - Healthchecks + healthy-gated startup order.
 
 services:
   mongo:
@@ -19,6 +31,12 @@ services:
       - mongo_data:/data/db
     ports:
       - "127.0.0.1:27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   redis:
     image: redis:7-alpine
@@ -28,23 +46,43 @@ services:
       - redis_data:/data
     ports:
       - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
 
   parse-server:
     build: .
     container_name: texas-parse-server
     restart: unless-stopped
     depends_on:
-      - mongo
-      - redis
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       PORT: "1337"
       PARSE_SERVER_APPLICATION_ID: "${APP_ID:-TEXAS}"
-      # NEVER ship the default — set MASTER_KEY in .env to a long random secret.
-      PARSE_SERVER_MASTER_KEY: "${MASTER_KEY:-change-me-set-MASTER_KEY-in-your-env-file}"
+      # REQUIRED — set MASTER_KEY in .env to a long random secret
+      # (openssl rand -hex 32). There is deliberately no default.
+      PARSE_SERVER_MASTER_KEY: "${MASTER_KEY:?Set MASTER_KEY in .env - see .env.example}"
       PARSE_SERVER_DATABASE_URI: "mongodb://mongo:27017/parse_texas"
       PARSE_SERVER_MOUNT_PATH: "/parse"
+      # Redis cache adapter (built into parse-server). Without this, the
+      # redis service above is started but never used.
+      PARSE_SERVER_CACHE_ADAPTER: '{"module":"/parse-server/lib/Adapters/Cache/RedisCacheAdapter","options":{"url":"redis://redis:6379"}}'
+      PARSE_SERVER_FILES_ADAPTER: '{"module":"@parse/fs-files-adapter","options":{"filesSubDirectory":"files"}}'
+    volumes:
+      - parse_files:/parse-server/files
     ports:
-      - "1337:1337"
+      - "127.0.0.1:1337:1337"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:1337/parse/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
 
   # Optional admin dashboard — LOCAL USE ONLY in this configuration
   # (allowInsecureHTTP is on so it works over http://localhost; do not
@@ -59,15 +97,16 @@ services:
       - parse-server
     environment:
       PARSE_DASHBOARD_APP_ID: "${APP_ID:-TEXAS}"
-      PARSE_DASHBOARD_MASTER_KEY: "${MASTER_KEY:-change-me-set-MASTER_KEY-in-your-env-file}"
+      PARSE_DASHBOARD_MASTER_KEY: "${MASTER_KEY:?Set MASTER_KEY in .env - see .env.example}"
       PARSE_DASHBOARD_SERVER_URL: "http://localhost:1337/parse"
       PARSE_DASHBOARD_APP_NAME: "Texas Parse Cloud"
       PARSE_DASHBOARD_USER_ID: "${DASHBOARD_USER:-texasadmin}"
-      PARSE_DASHBOARD_USER_PASSWORD: "${DASHBOARD_PASSWORD:-change-me-too}"
+      PARSE_DASHBOARD_USER_PASSWORD: "${DASHBOARD_PASSWORD:?Set DASHBOARD_PASSWORD in .env - see .env.example}"
       PARSE_DASHBOARD_ALLOW_INSECURE_HTTP: "true"
     ports:
-      - "4040:4040"
+      - "127.0.0.1:4040:4040"
 
 volumes:
   mongo_data:
   redis_data:
+  parse_files:

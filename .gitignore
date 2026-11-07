@@ -1,3 +1,9 @@
+# Environment / secrets — .env holds the Parse master key. Never commit it.
+# (.env.example is the template and IS committed.)
+.env
+.env.*
+!.env.example
+
 # Logs
 logs
 test_logs

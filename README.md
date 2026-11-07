@@ -20,7 +20,7 @@ Don't want to self-host? I host it for you — Texas support, from Abilene.
 > **Status (Oct 21, 2026):** LIVE and verified — product page and subscription checkout both load with the $99/mo price. Prefer email? rjflanary1@gmail.com works too.
 
 ✅ Unlimited apps, requests, users
-✅ MongoDB + Redis + S3 included — no extra bills
+✅ MongoDB + Redis + persistent volume file storage included — no extra bills
 ✅ Free migration from Heroku / Back4App / Firebase — I do it TODAY
 ✅ Email: rjflanary1@gmail.com — Abilene, TX
 

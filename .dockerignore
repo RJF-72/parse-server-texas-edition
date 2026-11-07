@@ -1,3 +1,9 @@
+# Secrets — the Dockerfile's build stage does COPY . . ; .env (master key)
+# must never enter the build context.
+.env
+.env.*
+!.env.example
+
 node_modules
 npm-debug.log
 *.md
